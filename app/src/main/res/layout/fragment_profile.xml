@@ -223,6 +223,7 @@
                         android:textSize="22sp" />
                 </LinearLayout>
                 <TextView
+                    android:id="@+id/text_changepass"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="change password ?"

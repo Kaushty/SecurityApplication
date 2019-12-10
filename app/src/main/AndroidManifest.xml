@@ -18,12 +18,22 @@
         tools:replace="android:appComponentFactory">
         <activity android:name=".recent_cards"></activity>
         <activity android:name=".sos_page"></activity>
-        <activity android:name=".navigation"/>
+        <activity android:name=".navigation">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+
+        </activity>
         <activity android:name=".EditProfileActivity">
         </activity>
         <activity
             android:name=".ResetPasswordActivity"
-            android:screenOrientation="portrait"></activity>
+            android:screenOrientation="portrait">
+
+        </activity>
         <activity
             android:name=".SignUp2"
             android:screenOrientation="portrait">
@@ -45,14 +55,12 @@
             android:name=".ProfileActivity"
             android:screenOrientation="portrait">
 
-            <!-- <intent-filter> -->
+<!--             <intent-filter>-->
 
+<!--             <action android:name="android.intent.action.MAIN"/>-->
+<!--             <category android:name="android.intent.category.LAUNCHER" />-->
 
-            <!-- <action android:name="android.intent.action.MAIN"/> -->
-            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
-
-
-            <!-- </intent-filter> -->
+<!--             </intent-filter>-->
         </activity>
         <activity
             android:name=".MainActivity"

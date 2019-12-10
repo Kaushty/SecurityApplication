@@ -31,13 +31,16 @@ public class EditProfileActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.profile_activity_edit);
 
-        mydb = new SQLiteDBHelper(this);
-        val = new Validation();
-        user = getIntent().getParcelableExtra("User");
-
+        initObjects();
         initialData();
         initViews();
         initListeners();
+    }
+
+    private void initObjects() {
+        mydb = new SQLiteDBHelper(this);
+        val = new Validation();
+        user = getIntent().getParcelableExtra("User");
     }
 
     private void initialData() {

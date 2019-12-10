@@ -29,6 +29,7 @@ import java.util.Calendar;
 public class SignUp1Activity extends AppCompatActivity {
 //
    Database_Helper myDb;
+   SQLiteDBHelper sqldb;
     Validation val = new Validation();
     private TextView text_view;
     private Button Btn_Submit;
@@ -49,6 +50,7 @@ private TextInputEditText textinputName,textinputDOB,textinputEmail,textinputPas
 
 
        myDb = new Database_Helper(this);
+       sqldb = new SQLiteDBHelper(this);
        java.util.Calendar calendar=Calendar.getInstance();
       final int year=calendar.get(Calendar.YEAR);
 
@@ -116,7 +118,9 @@ private TextInputEditText textinputName,textinputDOB,textinputEmail,textinputPas
         Radio_Gender = (RadioButton) findViewById(selected_id);
         String gender = Radio_Gender.getText().toString().trim(); //function .getEditText() have been removed as TextInputEditText doesn't require it.
         //Sending the user object
+
         myDb.setUser(user);
+        sqldb.setUser(user);
 
        Boolean isInserted = myDb.insert_data(textinputName.getText().toString().trim(),
                 gender,
@@ -154,11 +158,11 @@ private TextInputEditText textinputName,textinputDOB,textinputEmail,textinputPas
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if(resultCode==10 && requestCode==1){
-//            user=data.getParcelableExtra("ResultIntent");
-            Intent i = new Intent(this,ProfileActivity.class);
-//            i.putExtra("User",user);
-            startActivity(i);
+            user=data.getParcelableExtra("ResultIntent");
             finish();
+            Intent i = new Intent(this,navigation.class);
+            startActivity(i);
+
         }
     }
 }

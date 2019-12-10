@@ -236,7 +236,6 @@ public class Validation {
             edit_Phone.setError(null);
             return true;
         }
-
     }
 
     Boolean EditvalidateAddress(EditText edit_address) {
