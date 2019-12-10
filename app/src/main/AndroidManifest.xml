@@ -19,13 +19,13 @@
         tools:replace="android:appComponentFactory">
         <activity android:name=".sos_page"
             android:windowSoftInputMode="stateAlwaysHidden">
+
+        </activity>
+        <activity android:name=".navigation">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </activity>
-        <activity android:name=".navigation">
-
 
         </activity>
         <activity
