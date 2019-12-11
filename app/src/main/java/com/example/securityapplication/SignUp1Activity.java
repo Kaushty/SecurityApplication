@@ -37,6 +37,7 @@ import static java.security.AccessController.getContext;
 public class SignUp1Activity extends AppCompatActivity {
 //
    Database_Helper myDb;
+   SQLiteDBHelper sqldb;
     Validation val = new Validation();
     private TextView text_view;
     private Button Btn_Submit;
@@ -57,6 +58,7 @@ private TextInputEditText textinputName,textinputDOB,textinputEmail,textinputPas
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup1);
        myDb = new Database_Helper(this);
+       sqldb = new SQLiteDBHelper(this);
        java.util.Calendar calendar=Calendar.getInstance();
       final int year=calendar.get(Calendar.YEAR);
 
@@ -127,19 +129,22 @@ private TextInputEditText textinputName,textinputDOB,textinputEmail,textinputPas
         Radio_Gender = (RadioButton) findViewById(selected_id);
         String gender = Radio_Gender.getText().toString().trim(); //function .getEditText() have been removed as TextInputEditText doesn't require it.
         //Sending the user object
+
         myDb.setUser(user);
-        Boolean isInserted = myDb.insert_data(textinputName.getText().toString().trim(),
+        sqldb.setUser(user);
+
+       Boolean isInserted = myDb.insert_data(textinputName.getText().toString().trim(),
                 gender,
                 textinputDOB.getText().toString().trim(),
                 textinputEmail.getText().toString().trim(),
                 textinputPass.getText().toString().trim());
         if (isInserted) {
-//            textinputName.setText(null);
-//            gender_grp.clearCheck();
-//            textinputDOB.setText(null);
-//            textinputEmail.setText(null);
-//            textinputPass.setText(null);
-//            textinputCnfPass.setText(null);
+/*            textinputName.setText(null);
+            gender_grp.clearCheck();
+            textinputDOB.setText(null);
+            textinputEmail.setText(null);
+            textinputPass.setText(null);
+            textinputCnfPass.setText(null);*/
             //updates the Usr object with filled fields
             user=myDb.getUser();
             //starting signup activity
@@ -163,9 +168,13 @@ private TextInputEditText textinputName,textinputDOB,textinputEmail,textinputPas
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(resultCode==10 && requestCode==1)
+        if(resultCode==10 && requestCode==1){
+            user=data.getParcelableExtra("ResultIntent");
             finish();
+            Intent i = new Intent(this,navigation.class);
+            startActivity(i);
 
+        }
     }
 
    public static void setError(String s,TextView t1)

@@ -191,6 +191,7 @@
                     >
                 <Button
                     android:layout_width="125dp"
+
                     android:layout_height="wrap_content"
                     android:layout_marginTop="30dp"
                     android:layout_marginBottom="30dp"
@@ -214,8 +215,8 @@
                     android:textSize="22sp" />
             </LinearLayout>
 
-            </LinearLayout>
-        </ScrollView>
+        </LinearLayout>
+    </ScrollView>
     </LinearLayout>
 </LinearLayout>
 
