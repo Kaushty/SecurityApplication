@@ -27,7 +27,7 @@ import android.widget.Toast;
 public class sos_page extends AppCompatActivity {
     Intent intent;
     public  static final int RequestPermissionCode  = 1 ;
-    Button save, edit;
+    Button btn_SosEdit, btn_SosSave;
     String n1 = "1123456789";
     String n2 = "";
     String n3 = "";
@@ -43,8 +43,8 @@ public class sos_page extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sos_page);
-        save = (Button) findViewById(R.id.sossave);
-        edit = (Button) findViewById(R.id.sosedit);
+        btn_SosEdit = (Button) findViewById(R.id.sossave);
+        btn_SosSave = (Button) findViewById(R.id.sosedit);
         c1 = (TextInputEditText) findViewById(R.id.sose1);
         c2 = (TextInputEditText) findViewById(R.id.sose2);
         c3 = (TextInputEditText) findViewById(R.id.sose3);
@@ -56,7 +56,7 @@ public class sos_page extends AppCompatActivity {
         cc4 = (TextInputLayout) findViewById(R.id.sosl4);
         cc5 = (TextInputLayout) findViewById(R.id.sosl5);
 
-        if (n1.length() > 9)
+     /*   if (n1.length() > 9)
             c1.setText(n1);
         if (n2.length() > 9)
             c2.setText(n2);
@@ -65,7 +65,7 @@ public class sos_page extends AppCompatActivity {
         if (n4.length() > 9)
             c4.setText(n4);
         if (n5.length() > 9)
-            c5.setText(n5);
+            c5.setText(n5);*/
 
         c1.setEnabled(false);
         c2.setEnabled(false);
@@ -165,7 +165,7 @@ public class sos_page extends AppCompatActivity {
 
 
 
-        save.setOnClickListener(new View.OnClickListener() {
+        btn_SosSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if(c1.getText().length()==10)
@@ -179,7 +179,7 @@ public class sos_page extends AppCompatActivity {
                         c4.setEnabled(false);
                         c5.setEnabled(false);
                         Toast.makeText(sos_page.this, "Contact saved successfully", Toast.LENGTH_SHORT).show();
-                        edit.setBackground(getResources().getDrawable(R.drawable.btn_cus));
+                        btn_SosEdit.setBackground(getResources().getDrawable(R.drawable.btn_cus));
                         Intent intent;
                         intent = new Intent(sos_page.this,navigation.class);
                         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_CLEAR_TOP);
@@ -195,11 +195,11 @@ public class sos_page extends AppCompatActivity {
 
             }
         });
-        edit.setOnClickListener(new View.OnClickListener() {
+        btn_SosEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                edit.setBackground(getResources().getDrawable(R.drawable.btn_cus_edit));
+                btn_SosEdit.setBackground(getResources().getDrawable(R.drawable.btn_cus_edit));
 
             c1.setEnabled(true);
                 cc1.setAlpha(1);
@@ -299,7 +299,7 @@ public class sos_page extends AppCompatActivity {
 
                     }
                 }
-                break;
+            break;
         }
     }
 

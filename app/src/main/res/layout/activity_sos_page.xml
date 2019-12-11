@@ -216,7 +216,7 @@
             android:layout_marginTop="10dp"
             >
             <Button
-                android:id="@+id/sosedit"
+                android:id="@+id/btn_SosEdit"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
@@ -231,7 +231,7 @@
                 android:textSize="18sp"
                 android:textStyle="bold" />
             <Button
-                android:id="@+id/sossave"
+                android:id="@+id/btn_SosSave"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
 
