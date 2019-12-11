@@ -103,7 +103,7 @@ public class ProfileActivity extends AppCompatActivity {
         textGender = findViewById(R.id.text_Gender);
         textDob = findViewById(R.id.text_DOB);
         btn_edit = findViewById(R.id.btn_Edit);
-        textChangePass = findViewById(R.id.text_changepass);
+//        textChangePass = findViewById(R.id.text_changepass);
 
 //        textAadhaar = findViewById(R.id.text_Aadhaar);
     }

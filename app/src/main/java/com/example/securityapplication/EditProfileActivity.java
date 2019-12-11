@@ -13,8 +13,6 @@ import android.widget.Toast;
 
 import com.example.securityapplication.model.User;
 
-import org.w3c.dom.Text;
-
 public class EditProfileActivity extends AppCompatActivity {
 
     private EditText edit_Name,edit_Email,edit_Phone,edit_Address;
@@ -29,7 +27,7 @@ public class EditProfileActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.profile_activity_edit);
+        setContentView(R.layout.activity_edit_profile1);
 
         initObjects();
         initialData();
@@ -126,10 +124,7 @@ public class EditProfileActivity extends AppCompatActivity {
                 }
                 else {
                     AddressVal = val.EditvalidateAddress(edit_Address);
-                    if (AddressVal)
-                        Addresschanged = true;
-                    else
-                        Addresschanged = false;
+                    Addresschanged = AddressVal;
                 }
             }
         });

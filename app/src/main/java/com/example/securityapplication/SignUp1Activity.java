@@ -1,14 +1,20 @@
 package com.example.securityapplication;
 
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.ColorFilter;
+import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.content.ContextCompat;
+import android.support.v4.graphics.drawable.DrawableCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -20,6 +26,8 @@ import android.widget.Toast;
 import com.example.securityapplication.model.User;
 
 import java.util.Calendar;
+
+import static java.security.AccessController.getContext;
 
 /*
         *NOTE: Earlier TextInputLayout was used as parameter for all validation function
@@ -41,14 +49,14 @@ public class SignUp1Activity extends AppCompatActivity {
 DatePickerDialog datePickerDialog;
 private TextInputEditText textinputName,textinputDOB,textinputEmail,textinputPass,textinputCnfPass; // was earlier TextInputLayout
     private TextInputEditText date;
+    private TextInputLayout pass_outer,cnfpass_outer;
+    public TextView pass1,pass2;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_signup1);
-
-
        myDb = new Database_Helper(this);
        sqldb = new SQLiteDBHelper(this);
        java.util.Calendar calendar=Calendar.getInstance();
@@ -63,13 +71,17 @@ private TextInputEditText textinputName,textinputDOB,textinputEmail,textinputPas
         textinputEmail = findViewById(R.id.textlayout_Email);
         textinputPass =  findViewById(R.id.textlayout_Pass);
         textinputCnfPass = findViewById(R.id.textlayout_CnfPass);
+        pass_outer=findViewById(R.id.textlayout_Pass_outer);
+        cnfpass_outer=findViewById(R.id.textlayout_CnfPass_outer);
+        pass1=findViewById(R.id.pass_text1);
+        pass2=findViewById(R.id.pass_text2);
+
         gender_grp = findViewById(R.id.radiogrp);
         Btn_Submit = findViewById(R.id.btn_sub);
-
         date.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final Calendar c= Calendar.getInstance();
+                final Calendar c= java.util.Calendar.getInstance();
                 int mYear = c.get(Calendar.YEAR); // current year
                 int mMonth = c.get(Calendar.MONTH); // current month
                 int mDay = c.get(Calendar.DAY_OF_MONTH); // current day
@@ -86,7 +98,6 @@ private TextInputEditText textinputName,textinputDOB,textinputEmail,textinputPas
 
                             }
                         }, mYear, mMonth, mDay);
-                datePickerDialog.getDatePicker().setMaxDate(System.currentTimeMillis());
                 datePickerDialog.show();
             }
         });
@@ -105,7 +116,7 @@ private TextInputEditText textinputName,textinputDOB,textinputEmail,textinputPas
 
     public void Validater(View view) {
         if (val.validateName(textinputName) & val.validateGender(gender_grp,text_view) & val.validateDob(textinputDOB) & val.validateEmail(textinputEmail) &
-                val.validatePassword(textinputPass) & val.validateCnfPassword(textinputPass,textinputCnfPass)){
+                val.validatePassword(textinputPass,pass1) & val.validateCnfPassword(textinputPass,textinputCnfPass,pass2)){
             AddData();
         }
         else {
@@ -128,15 +139,15 @@ private TextInputEditText textinputName,textinputDOB,textinputEmail,textinputPas
                 textinputEmail.getText().toString().trim(),
                 textinputPass.getText().toString().trim());
         if (isInserted) {
-         /*   textinputName.setText(null);
+/*            textinputName.setText(null);
             gender_grp.clearCheck();
             textinputDOB.setText(null);
             textinputEmail.setText(null);
             textinputPass.setText(null);
-            textinputCnfPass.setText(null);
-           // updates the Usr object with filled fields*/
+            textinputCnfPass.setText(null);*/
+            //updates the Usr object with filled fields
             user=myDb.getUser();
-          //  starting signup activity
+            //starting signup activity
             Intent intent=new Intent(SignUp1Activity.this,SignUp2.class);
             intent.putExtra("User",user);
             startActivityForResult(intent,1);
@@ -165,4 +176,15 @@ private TextInputEditText textinputName,textinputDOB,textinputEmail,textinputPas
 
         }
     }
+
+   public static void setError(String s,TextView t1)
+   {
+       if(s!=null) {
+           t1.setText(s);
+           t1.setVisibility(View.VISIBLE);
+       }
+       else{
+           t1.setVisibility(View.INVISIBLE);
+       }
+   }
 }

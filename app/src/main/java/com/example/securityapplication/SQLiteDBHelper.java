@@ -6,7 +6,6 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.example.securityapplication.model.User;
 
@@ -26,7 +25,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     public static final String COLUMN_GENDER = "gender";
     public static final String COLUMN_PASSWORD = "password";
     public static final String COLUMN_MOBILE = "mobile";
-//    public static final String COLUMN_AADHAR = "aadhar";
+    public static final String COLUMN_AADHAR = "aadhar";
     public static final String COLUMN_LOCATION = "location";
     public static final String COLUMN_IMEI = "imei";
     public static final String COLUMN_DOB = "dob";
@@ -43,8 +42,6 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
                     COLUMN_LOCATION + " TEXT, " +
                     COLUMN_DOB + " TEXT, " +
                     COLUMN_IMEI + " TEXT " + ")";
-
-
 
     private static final String SOS_TABLE = "sostable";
     public static final String COLUMN_C1 = "c1";
@@ -71,7 +68,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase sqLiteDatabase) {
-        Log.d("SQL Query","Create user table query is:"+CREATE_TABLE_QUERY);
+        Log.d("SQL Query","Create table query is:"+CREATE_TABLE_QUERY);
         sqLiteDatabase.execSQL(CREATE_TABLE_QUERY);
 
         Log.d("SQL Query","Create sostable with query :"+CREATE_SOSTABLE_QUERY);
@@ -109,7 +106,6 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         }
         else{
             Log.d("Database","User object added successfully");
-
             return true;
             }
         }catch(Exception e){
@@ -153,6 +149,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+
     /**Updating user*/
     public void updateUser(User user){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -161,25 +158,26 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         contentValues.put(COLUMN_NAME, user.getName());
         contentValues.put(COLUMN_EMAIL, user.getEmail());
 //        contentValues.put(COLUMN_PASSWORD, user.getPassword());
-        contentValues.put(COLUMN_GENDER, user.getGender());
+//        contentValues.put(COLUMN_GENDER, user.getGender());
         contentValues.put(COLUMN_MOBILE,user.getMobile());
+//        contentValues.put(COLUMN_AADHAR, user.getAadhar());
         contentValues.put(COLUMN_LOCATION, user.getLocation());
-        contentValues.put(COLUMN_IMEI, user.getImei());
-        contentValues.put(COLUMN_DOB, user.getDob()); //ADDED DOB
+//        contentValues.put(COLUMN_IMEI, user.getImei());
+//        contentValues.put(COLUMN_DOB, user.getDob()); //ADDED DOB
 
-        db.update(TABLE_NAME,contentValues,COLUMN_EMAIL + "=?",
-                new String[]{String.valueOf(user.getEmail())});
+        db.update(TABLE_NAME,contentValues,COLUMN_ID + "=?",
+                new String[]{String.valueOf(user.getId())});
         db.close();
     }
 
     /**Checking if user is present*/
-    public boolean checkUser(String mobile){
+    public boolean checkUser(String aadhar){
         String[] columns = {
-                COLUMN_MOBILE   //NOTE:changed to column Email
+                COLUMN_MOBILE   //NOTE:changed to column mobile from aadhaar
         };
         SQLiteDatabase db = this.getReadableDatabase();
         String selection = COLUMN_MOBILE + " = ?";
-        String[] selectionArgs = {mobile};
+        String[] selectionArgs = {aadhar};
 
         Cursor cursor = db.query(TABLE_NAME,
                 columns,
@@ -191,25 +189,16 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         int cursorCount = cursor.getCount();
         cursor.close();
         db.close();
-        Log.d("DATABASE","Cursor count for Phone number "+cursorCount);
+        Log.d("DATABASE","Cursor count for Mobile"+cursorCount);
         if(cursorCount == 0){
             return true;
         }
-        Log.d("DATABASE","Phone no exists:"+mobile);
+        Log.d("DATABASE","Mobile no  exists:"+aadhar);
         return false;
 
     }
 
-    /**Delete User */
-    /*public void deleteUser(User user) {
-        SQLiteDatabase db = this.getWritableDatabase();
-
-        // NOTE: delete user record by Aadhar
-        db.delete(TABLE_NAME, COLUMN_AADHAR + " = ?",
-                new String[]{String.valueOf(user.getAadhar())});
-        db.close();
-    }*/
-
+    //Fetch data for ProfileActivity
     public Cursor getAllData() {
         Cursor cursor = getReadableDatabase().rawQuery("select * from "+TABLE_NAME, null);
         if (cursor.getCount()!=0) {
@@ -221,6 +210,17 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         return cursor;
     }
 
+    /**Delete User */
+   /* public void deleteUser(User user) {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // NOTE: delete user record by Aadhar
+        db.delete(TABLE_NAME, COLUMN_AADHAR + " = ?",
+                new String[]{String.valueOf(user.getAadhar())});
+        db.close();
+    }*/
+
+
     //Sets the user object for this class
     public void setUser(User user){
         this.user=user;
@@ -230,6 +230,5 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     public User getUser(){
         Log.d("DH.java","User object sent");
         return user;
-
     }
 }
