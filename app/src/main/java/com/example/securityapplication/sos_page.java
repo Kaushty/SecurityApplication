@@ -1,17 +1,22 @@
 package com.example.securityapplication;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
+import android.net.Uri;
+import android.content.Intent;
+import android.provider.ContactsContract;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.text.Editable;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
@@ -20,10 +25,20 @@ import android.widget.Toast;
 
 import com.example.securityapplication.model.User;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class sos_page extends AppCompatActivity {
+
+    Intent intent;
+    public  static final int RequestPermissionCode  = 1 ;
+    Button btn_SosEdit, btn_SosSave;
+//    String n1 = "1123456789";
+//    String n2 = "";
+//    String n3 = "";
+//    String n4 = "";
+//    String n5 = "";
+
+    private TextInputEditText c1, c2, c3, c4, c5,current;
+    private TextInputLayout cc1,cc2,cc3,cc4,cc5;
+    private final static int CONTACT_PICKER_RESULT = 1001;
 
     private ContentValues values;
     private String sos_n1,sos_n2,sos_n3,sos_n4,sos_n5;
@@ -32,7 +47,6 @@ public class sos_page extends AppCompatActivity {
     private Validation val;
     private User user;
     private Button btn_Edit,btn_Save;
-    private TextInputEditText c1, c2, c3, c4, c5;
     boolean c1added,c2added,c3added,c4added,c5added;
 
     @Override
@@ -40,16 +54,55 @@ public class sos_page extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sos_page);
 
-         values = new ContentValues();
-         mydb = new SQLiteDBHelper(this);
-         user = new User();
-         val = new Validation();
+        values = new ContentValues();
+        mydb = new SQLiteDBHelper(this);
+        user = new User();
+        val = new Validation();
 
+        EnableRuntimePermission();
         initViews();
         initInitialContacts();
         initTempValues();
         initListeners();
 
+
+        /*   if (n1.length() > 9)
+            c1.setText(n1);
+        if (n2.length() > 9)
+            c2.setText(n2);
+        if (n3.length() > 9)
+            c3.setText(n3);
+        if (n4.length() > 9)
+            c4.setText(n4);
+        if (n5.length() > 9)
+            c5.setText(n5);*/
+
+        c1.setEnabled(false);
+        c2.setEnabled(false);
+        c3.setEnabled(false);
+        c4.setEnabled(false);
+        c5.setEnabled(false);
+
+
+
+    }
+
+    private void initViews() {
+
+        btn_SosEdit = (Button) findViewById(R.id.sosedit);
+        btn_SosSave = (Button) findViewById(R.id.sossave);
+        c1 = (TextInputEditText) findViewById(R.id.sose1);
+        c2 = (TextInputEditText) findViewById(R.id.sose2);
+        c3 = (TextInputEditText) findViewById(R.id.sose3);
+        c4 = (TextInputEditText) findViewById(R.id.sose4);
+        c5 = (TextInputEditText) findViewById(R.id.sose5);
+        cc1 = (TextInputLayout) findViewById(R.id.sosl1);
+        cc2 = (TextInputLayout) findViewById(R.id.sosl2);
+        cc3 = (TextInputLayout) findViewById(R.id.sosl3);
+        cc4 = (TextInputLayout) findViewById(R.id.sosl4);
+        cc5 = (TextInputLayout) findViewById(R.id.sosl5);
+
+        btn_SosSave.setEnabled(false);
     }
 
     private void initInitialContacts() {
@@ -142,17 +195,27 @@ public class sos_page extends AppCompatActivity {
                 }
                 else if (sos_n1.length()==10){
                     c1added = true;
+>>>>>>> kmaster
                 }
+                return false;
             }
         });
-        c2.addTextChangedListener(new TextWatcher() {
+        c2.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-            @Override
+<<<<<<< HEAD
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (c2.getRight() - c2.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        current=c2;
+                        intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                        startActivityForResult(intent, 7);
+                    }
+=======
             public void afterTextChanged(Editable editable) {
                 sos_n2 = c2.getText().toString().trim();
                 if (sos_n2.length() !=10){
@@ -163,111 +226,171 @@ public class sos_page extends AppCompatActivity {
                 }
                 else if (sos_n2.length()==10){
                     c2added = true;
+>>>>>>> kmaster
                 }
+                return false;
             }
         });
-        c3.addTextChangedListener(new TextWatcher() {
+        c3.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (c3.getText().toString().trim().length() !=10){
-                    c3.setError("please enter a valid mobile no.");
-                }
-            }
-        });
-        c4.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-            @Override
-            public void afterTextChanged(Editable editable) {
-                if (c4.getText().toString().trim().length() !=10){
-                    c4.setError("please enter a valid mobile no.");
-                }
-            }
-        });
-        c5.addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-            }
-            @Override
-            public void afterTextChanged(Editable editable) {
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
 
-                if (c5.getText().toString().trim().length() !=10){
-                    c5.setError("please enter a valid mobile no.");
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (c3.getRight() - c3.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        current=c3;
+                        intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                        startActivityForResult(intent, 7);
+                    }
                 }
+                return false;
+            }
+        });
+        c4.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (c4.getRight() - c4.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        current=c4;
+                        intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                        startActivityForResult(intent, 7);
+                    }
+                }
+                return false;
+            }
+        });
+        c5.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (c5.getRight() - c5.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        current=c5;
+                        intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                        startActivityForResult(intent, 7);
+                    }
+                }
+                return false;
             }
         });
 */
 
-        btn_Save.setOnClickListener(new View.OnClickListener() {
+
+        c1.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (c1.getRight() - c1.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        current=c1;
+                        intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                        startActivityForResult(intent, 7);
+                    }
+                }
+                return false;
+            }
+        });
+        c2.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (c2.getRight() - c2.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        current=c2;
+                        intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                        startActivityForResult(intent, 7);
+                    }
+                }
+                return false;
+            }
+        });
+        c3.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (c3.getRight() - c3.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        current=c3;
+                        intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                        startActivityForResult(intent, 7);
+                    }
+                }
+                return false;
+            }
+        });
+        c4.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (c4.getRight() - c4.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        current=c4;
+                        intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                        startActivityForResult(intent, 7);
+                    }
+                }
+                return false;
+            }
+        });
+        c5.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                final int DRAWABLE_LEFT = 0;
+                final int DRAWABLE_TOP = 1;
+                final int DRAWABLE_RIGHT = 2;
+                final int DRAWABLE_BOTTOM = 3;
+
+                if(event.getAction() == MotionEvent.ACTION_UP) {
+                    if(event.getRawX() >= (c5.getRight() - c5.getCompoundDrawables()[DRAWABLE_RIGHT].getBounds().width())) {
+                        current=c5;
+                        intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                        startActivityForResult(intent, 7);
+                    }
+                }
+                return false;
+            }
+        });
+
+        btn_SosSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                /*if(c1.getText().length()==10)
-                {
-                    if((c2.getText().length()==0||c2.getText().length()==10)&&(c3.getText().length()==0||
-                            c3.getText().length()==10)&&(c4.getText().length()==0||c4.getText().length()==10)&&(c5.getText().length()==0||
-                            c5.getText().length()==10)) {
+                Intent intent;
+                intent = new Intent(sos_page.this,navigation.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-                        c1.setEnabled(false);
-                        c2.setEnabled(false);
-                        c3.setEnabled(false);
-                        c4.setEnabled(false);
-                        c5.setEnabled(false);
-                        Toast.makeText(sos_page.this, "Contact saved successfully", Toast.LENGTH_SHORT).show();
-                        Intent intent;
-                        intent = new Intent(sos_page.this,navigation.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK |Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                        startActivity(intent);
-                    }
-                    else{
-                        Toast.makeText(sos_page.this, "Please Field contact information Correctly", Toast.LENGTH_SHORT).show();
-                    }
-                }
-                else{
-                    Toast.makeText(sos_page.this, "Emergency Contact 1 is mandodary", Toast.LENGTH_SHORT).show();
-                    Toast.makeText(sos_page.this, "Emergency Contact 1 is mandatory", Toast.LENGTH_SHORT).show();
-                }*/
+                btn_SosEdit.setBackground(getResources().getDrawable(R.drawable.btn_cus));
 
-                /*             if (c1.getText() != null) {
-                    if (c2.getText().toString() != null) {
-                        if (c3.getText().toString() != null) {
-                            if (c4.getText().toString() != null) {
-                                if (c5.getText().toString() != null) {
-                                    //check if all numbers are unique and update unique
-                                } else {
-                                    //save 4 contacts
-                                }
-                            } else {
-                                //save 3 contacts
-                            }
-                        } else {
-                            //save 2 contacts
-                        }
-                    } else {
-                        //save 1 contact
-                    }
-                }
-                else{
-                    //Toast Atleast 1 contact required
-                    Toast.makeText(getApplicationContext(),"Atleast 1 SOS contact required",Toast.LENGTH_LONG).show();
-                    return;
-                }*/
-
-                    //FOR c1
-                Log.d("SOS","c1="+c1.getText());
+                //FOR c1
+                Log.d("SosActivity","OnClick : Initial value for c1="+c1.getText());
                     if (c1.getText().toString().equals("")) {
                         //toast
                         Log.d("SOS Activity","C1 Empty");
@@ -467,46 +590,52 @@ public class sos_page extends AppCompatActivity {
                        user.setSosc4(temp_n4);
                        user.setSosc5(temp_n5);
 
-                       mydb.addsosContacts(user);
+                       if (mydb.addsosContacts(user)){
+                           c1.setEnabled(false);
+                           c2.setEnabled(false);
+                           c3.setEnabled(false);
+                           c4.setEnabled(false);
+                           c5.setEnabled(false);
+                           btn_SosSave.setEnabled(false);
+
+                           Toast.makeText(sos_page.this,"DATA saved successfully ",Toast.LENGTH_SHORT).show();
+                            startActivity(intent);
+                        }
+                       else {
+                           Toast.makeText(sos_page.this,"SOS Contact could not be added",Toast.LENGTH_SHORT).show();
+                           Log.d("SosActivity","Data was not entered");
+                       }
+
                     }
-                    Toast.makeText(sos_page.this,"DATA saved successfully ",Toast.LENGTH_SHORT).show();
+                    else {
+                        //nochange found move to next activity
+                        startActivity(intent);
+                    }
 
-                c1.setEnabled(false);
-                c2.setEnabled(false);
-                c3.setEnabled(false);
-                c4.setEnabled(false);
-                c5.setEnabled(false);
 
-                btn_Save.setEnabled(false);
-                try {
-                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
-                    imm.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-                }
-                catch (Exception e){
-                    Log.d("SOS Activity","OnClick: Keyboard disappeared");
-                }
-
-               /* catch (Exception e){
-//                    Toast.makeText(sos_page.this,"Encountered an issue while saving ")
-                    Log.d("Sos Page","Encountered an issue while saving ");
-                }*/
 
             }
         });
 
-        btn_Edit.setOnClickListener(new View.OnClickListener() {
+        btn_SosEdit.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                c1.setEnabled(true);
-                c2.setEnabled(true);
-                c3.setEnabled(true);
-                c4.setEnabled(true);
-                c5.setEnabled(true);
-                btn_Save.setEnabled(true);
+            btn_SosEdit.setBackground(getResources().getDrawable(R.drawable.btn_cus_edit));
+            c1.setEnabled(true);
+            btn_SosSave.setAlpha(1);
+                cc1.setAlpha(1);
+                cc2.setAlpha(1);
+                cc3.setAlpha(1);
+                cc4.setAlpha(1);
+                cc5.setAlpha(1);
+            c2.setEnabled(true);
+            c3.setEnabled(true);
+            c4.setEnabled(true);
+            c5.setEnabled(true);
+            btn_SosSave.setEnabled(true);
             }
         });
     }
-
     private boolean checkUnique(EditText contact,int i) {
         String check1 = c1.getText().toString();
         String check2 = c2.getText().toString();
@@ -559,22 +688,67 @@ public class sos_page extends AppCompatActivity {
         return true;
     }
 
-    private void initViews() {
-
-        btn_Save = (Button) findViewById(R.id.sossave);
-        btn_Edit = (Button) findViewById(R.id.sosedit);
-
-        c1 = (TextInputEditText) findViewById(R.id.sose1);
-        c2 = (TextInputEditText) findViewById(R.id.sose2);
-        c3 = (TextInputEditText) findViewById(R.id.sose3);
-        c4 = (TextInputEditText) findViewById(R.id.sose4);
-        c5 = (TextInputEditText) findViewById(R.id.sose5);
-
-        c1.setEnabled(false);
-        c2.setEnabled(false);
-        c3.setEnabled(false);
-        c4.setEnabled(false);
-        c5.setEnabled(false);
-        btn_Save.setEnabled(false);
+    public void EnableRuntimePermission(){
+        if (ActivityCompat.shouldShowRequestPermissionRationale(sos_page.this,
+                Manifest.permission.READ_CONTACTS))
+        {
+            Log.d("SosActivity","Permissions: Permission granted");
+        } else {
+            ActivityCompat.requestPermissions(sos_page.this,new String[]{
+                    Manifest.permission.READ_CONTACTS}, RequestPermissionCode);
+        }
     }
+
+    @Override
+    public void onActivityResult(int RequestCode, int ResultCode, Intent ResultIntent) {
+
+        super.onActivityResult(RequestCode, ResultCode, ResultIntent);
+
+        switch (RequestCode) {
+
+            case (7):
+                if (ResultCode == Activity.RESULT_OK) {
+
+                    Uri uri;
+                    Cursor cursor1, cursor2;
+                    String TempNameHolder, TempNumberHolder, TempContactID, IDresult = "" ;
+                    int IDresultHolder ;
+
+                    uri = ResultIntent.getData();
+
+                    cursor1 = getContentResolver().query(uri, null, null, null, null);
+
+                    if (cursor1.moveToFirst()) {
+
+                        TempNameHolder = cursor1.getString(cursor1.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+
+                        TempContactID = cursor1.getString(cursor1.getColumnIndex(ContactsContract.Contacts._ID));
+
+                        IDresult = cursor1.getString(cursor1.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
+
+                        IDresultHolder = Integer.valueOf(IDresult) ;
+
+                        if (IDresultHolder == 1) {
+
+                            cursor2 = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null, ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + TempContactID, null, null);
+
+                            while (cursor2.moveToNext()) {
+
+                                TempNumberHolder = cursor2.getString(cursor2.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                                Log.i("contact_name",TempNameHolder);
+                                int len=TempNumberHolder.length();
+                                String tmp;
+                                tmp=TempNumberHolder.substring(len-10,len);
+                                current.setText(tmp);
+
+                            }
+                        }
+
+                    }
+                }
+            break;
+        }
+    }
+
+
 }
