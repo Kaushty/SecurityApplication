@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.example.securityapplication.Helper.FirebaseHelper;
+import com.example.securityapplication.model.Device;
 import com.example.securityapplication.model.User;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -150,15 +151,6 @@ public class sos_page extends AppCompatActivity {
         c5.setText(sos_n5);
         Log.d("SOS Activity","FillViews() sos_n1= "+sos_n1);
         Log.d("SOS Activity","SOS contact views filled with values c1= "+c1.getText());
-    }
-
-
-    private void initTempValues() {
-        temp_n1 = "";
-        temp_n2 = "";
-        temp_n3 = "";
-        temp_n4 = "";
-        temp_n5 = "";
     }
 
     private void initListeners(){
@@ -444,21 +436,25 @@ public class sos_page extends AppCompatActivity {
                         }
                     }
 
-                    if (c1added || c2added || c3added || c4added || c5added) {
+                    if (c1added || c2added || c3added || c4added || c5added){
+                        try{
+                            user.setSosContacts(SosContacts);
+                            Log.d("SosActivity", "HashMap updated in User object c1=" + user.getSosContacts().get("c1"));
 
-                        user.setSosContacts(SosContacts);
-                        Log.d("SosActivity", "HashMap updated in User object c1=" + user.getSosContacts().get("c1"));
-
-                        if (mydb.addsosContacts(SosContacts)) {
-                            Log.d("SosActivity", "SOS contacts was added in database");
-                            updateFireBaseSOS();
-                            Toast.makeText(sos_page.this, "DATA saved successfully ", Toast.LENGTH_SHORT).show();
-
-                            startActivity(intent);
-                        } else {
-                            Toast.makeText(sos_page.this, "SOS Contact could not be added", Toast.LENGTH_SHORT).show();
-                            Log.d("SosActivity", "Data was not entered");
+                            if (mydb.addsosContacts(SosContacts)) {
+                                firebaseHelper.addsos_infirebase(SosContacts);
+                                Toast.makeText(sos_page.this, "Data saved successfully ", Toast.LENGTH_SHORT).show();
+                                Log.d("SosActivity", "SOS Contact Data entered in Firebase successfully");
+                                startActivity(intent);
+                            } else {
+                                Toast.makeText(sos_page.this, "SOS Contact could not be added", Toast.LENGTH_SHORT).show();
+                                Log.d("SosActivity", "SOS Contact Data was not entered");
+                            }
                         }
+                        catch (Exception e ){
+                            Log.d("sos_page","Exception encountered while storing");
+                        }
+
                     } else {
                         //no change found move to next activity
                         startActivity(intent);
@@ -495,14 +491,6 @@ public class sos_page extends AppCompatActivity {
                 }
             }
         });
-    }
-
-    private void updateFireBaseSOS() {
-        FirebaseUser firebaseUser= FirebaseAuth.getInstance().getCurrentUser();
-        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
-        DatabaseReference databaseReference = firebaseDatabase.getReference();
-        databaseReference.child("Users").child(firebaseUser.getUid()).child("sosContacts").setValue(SosContacts);
-        Log.d("SOSActivity","Firebase : Data updated in firebase");
     }
 
     private boolean checkUnique(EditText contact,int i) {
@@ -626,8 +614,7 @@ public class sos_page extends AppCompatActivity {
         }
     }
 
-    @Override
-    public void onBackPressed(){
+    /*public void onBackPressed(){
         ReturnIntent.putExtra("ResultIntent",user);
         //Log.d("SignUp2 ","Returned Completed User Object"+user.getMobile()+user.getLocation());
         setResult(10,ReturnIntent);//to finish sing up 1 activity
@@ -649,5 +636,5 @@ public class sos_page extends AppCompatActivity {
         AlertDialog alert = a_builder.create();
         alert.setTitle("Message");
         alert.show();
-    }
+    }*/
 }
