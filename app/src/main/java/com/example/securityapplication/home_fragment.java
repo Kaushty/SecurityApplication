@@ -69,7 +69,7 @@ public class home_fragment extends Fragment {
                 }
                 else
                 {
-                    Toast.makeText(getContext(),"sms permisssion noy enabled",Toast.LENGTH_LONG);
+                    Toast.makeText(getContext(),"sms permisssion not enabled",Toast.LENGTH_LONG);
                 }
 
                 Intent mSosPlayerIntent = new Intent(getContext(), SendSMSService.class);
