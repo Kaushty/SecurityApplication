@@ -28,6 +28,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+
 public class FirebaseHelper {
 
     private FirebaseAuth mAuth;
@@ -77,7 +79,7 @@ public class FirebaseHelper {
     }
 
     private void initDataBaseReferences(){
-        Log.d(TAG,"Initializing Databse References... ");
+        Log.d(TAG,"Initializing Database References... ");
         //Initialize Database
         mDevicesDatabaseReference = mFirebaseDatabase.getReference().child("Devices");
         mUsersDatabaseReference = mFirebaseDatabase.getReference().child("Users");
@@ -167,18 +169,10 @@ public class FirebaseHelper {
 
     public  FirebaseDatabase getFirebaseDatabase() { return mFirebaseDatabase; }
 
-    public void addsos_infirebase(String uid,String c1,String c2,String c3,String c4,String c5){
-        DatabaseReference dr= mUsersDatabaseReference.child(uid).child("sosContacts");
-        DatabaseReference dr1=mUsersDatabaseReference.child(uid).child("sosContacts").child("c1");
-        DatabaseReference dr2=mUsersDatabaseReference.child(uid).child("sosContacts").child("c2");
-        DatabaseReference dr3=mUsersDatabaseReference.child(uid).child("sosContacts").child("c3");
-        DatabaseReference dr4=mUsersDatabaseReference.child(uid).child("sosContacts").child("c4");
-        DatabaseReference dr5=mUsersDatabaseReference.child(uid).child("sosContacts").child("c5");
-        dr1.setValue(c1);
-        dr2.setValue(c2);
-        dr3.setValue(c3);
-        dr4.setValue(c4);
-        dr5.setValue(c5);
+    public void addsos_infirebase(HashMap<String,String> sosContact){
+
+       mUsersDatabaseReference.child(mAuth.getUid()).child("sosContacts").setValue(sosContact);
+       Log.d("Firebase Helper","SOS contact details added to firebase successfully c1= "+sosContact.get("c1"));
 
     }
     public void updateuser_infirebase(String uid,User user){
