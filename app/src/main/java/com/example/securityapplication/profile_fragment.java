@@ -151,48 +151,48 @@ public class profile_fragment extends Fragment {
         });
 
         btn_edit.setOnClickListener(new View.OnClickListener() {
-                                        @Override public void onClick(View view) {
+            @Override public void onClick(View view) {
 
-                                            if (IsInternet.isNetworkAvaliable(getContext())) {
+                if (IsInternet.isNetworkAvaliable(getContext())) {
 
-                                                if(btn_edit.getText().equals("edit"))
-                                                {btn_edit.setText("Save");
-                                                    enable();
-                                                alphaa(1.0f);}
-                                                else {
-                                                    if(!validate())
-                                                    {
-                                                        Toast.makeText(getContext(), "Please Enter Valid Information", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                    else {
-                                                        //save code will come here
-                                                        user.setName(textName.getText().toString());
-                                                        user.setDob(textDob.getText().toString());
-                                                        user.setLocation(textAddress.getText().toString());
-                                                        user.setMobile(textPhone.getText().toString());
-                                                        if (spinner.getSelectedItemPosition() == 0)
-                                                            user.setGender("male");
-                                                        else if (spinner.getSelectedItemPosition() == 1)
-                                                            user.setGender("female");
-                                                        else
-                                                            user.setGender("others");
+                    if(btn_edit.getText().equals("edit"))
+                    {btn_edit.setText("Save");
+                        enable();
+                    alphaa(1.0f);}
+                    else {
+                        if(!validate())
+                        {
+                            Toast.makeText(getContext(), "Please Enter Valid Information", Toast.LENGTH_SHORT).show();
+                        }
+                        else {
+                            //save code will come here
+                            user.setName(textName.getText().toString());
+                            user.setDob(textDob.getText().toString());
+                            user.setLocation(textAddress.getText().toString());
+                            user.setMobile(textPhone.getText().toString());
+                            if (spinner.getSelectedItemPosition() == 0)
+                                user.setGender("male");
+                            else if (spinner.getSelectedItemPosition() == 1)
+                                user.setGender("female");
+                            else
+                                user.setGender("others");
 
-                                                        mydb.updateUser(user);
-                                                        firebaseHelper.updateuser_infirebase(FirebaseAuth.getInstance().getUid(),user);
+                            mydb.updateUser(user);
+                            firebaseHelper.updateuser_infirebase(FirebaseAuth.getInstance().getUid(),user);
 
 
-                                                        btn_edit.setText("edit");
-                                                        alphaa(0.6f);
-                                                        disable();
-                                                    }
-                                                }
-                                            }//Sending Data to EditProfileActivity
-                                            else {
-                                                Toast.makeText(getContext(), "Please check your Internet Connectivity", Toast.LENGTH_LONG).show();
-                                            }
-                                        }
+                            btn_edit.setText("edit");
+                            alphaa(0.6f);
+                            disable();
+                        }
+                    }
+                }//Sending Data to EditProfileActivity
+                else {
+                    Toast.makeText(getContext(), "Please check your Internet Connectivity", Toast.LENGTH_LONG).show();
+                }
+            }
 
-                                    }
+        }
         );
 
         btn_logout.setOnClickListener(new View.OnClickListener() {
