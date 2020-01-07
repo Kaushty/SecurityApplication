@@ -2,6 +2,7 @@ package com.example.securityapplication;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -9,6 +10,7 @@ import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.location.LocationListener;
 import android.location.LocationManager;
@@ -17,6 +19,7 @@ import android.os.Bundle;
 import android.location.Location;
 import android.os.IBinder;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NotificationCompat;
@@ -24,8 +27,10 @@ import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.widget.Toast;
 
+import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationAvailability;
@@ -33,6 +38,15 @@ import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.SettingsClient;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+
 import es.dmoral.toasty.Toasty;
 
 public class GetGPSCoordinates extends Service {
@@ -41,11 +55,14 @@ public class GetGPSCoordinates extends Service {
     private LocationManager locationManager;
     private static String lastKnownLocation=null;
     private FusedLocationProviderClient mFusedLocationClient;
-    private LocationRequest locationRequest;
+    private static LocationRequest locationRequest;
     private LocationCallback locationCallback;
-    private GoogleApiClient client;
     public static final String CHANNEL_ID = "ForegroundServiceChannel";
 
+    private long locationreq_sample = 3*1000;
+    private long locationreq_normal = 7*1000;
+    private long locationreq_rapid = 60*1000;
+    private long locationreq_fastest = 3*1000;
 
     @Nullable
     @Override
@@ -61,14 +78,9 @@ public class GetGPSCoordinates extends Service {
     @Override
     public void onCreate() {
 
-        Log.d("GPSService", "Oncreate");
+        Log.d("GPSService", "OnCreate");
         mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
-        locationRequest = LocationRequest.create();
-        locationRequest.setInterval(5*60*1000); //NOTE:changed to 5 mins
-        locationRequest.setFastestInterval(3*60*1000); //NOTE:changed to 2 mins
-        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-
+        setLocationRequest();
 
         /*if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED)
             && (ContextCompat.checkSelfPermission(this,Manifest.permission.ACCESS_COARSE_LOCATION) ==PackageManager.PERMISSION_GRANTED))
@@ -140,10 +152,10 @@ public class GetGPSCoordinates extends Service {
                         //Location Available resume service
                     }else {
                         Log.d("onLocationAvailabilty","Location Unavailable deploying intent");
-                        Toasty.warning(getApplicationContext(),"Please turn on location to help us serve you better",Toasty.LENGTH_LONG).show();
-                        Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                        startActivity(i);
+//                        Toasty.warning(getApplicationContext(),"Please turn on location to help us serve you better",Toasty.LENGTH_LONG).show();
+//                        Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+//                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//                        startActivity(i);
                     }
                 }
             };
@@ -169,7 +181,7 @@ public class GetGPSCoordinates extends Service {
         }
         else {
             Log.d("GPS Service","Inside else, Permissions denied");
-            Toast.makeText(this,"Location Permissions not granted",Toast.LENGTH_LONG).show();
+            Toast.makeText(this,"Please grant us location permissions",Toast.LENGTH_LONG).show();
         }
 
 
@@ -221,9 +233,6 @@ public class GetGPSCoordinates extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
-        //Toasty.error(getApplicationContext(), "GPS service destroyed", Toast.LENGTH_SHORT, true).show();
-
-        //Toast.makeText(getApplicationContext(),"GPS service destroyed",Toast.LENGTH_SHORT);
         Log.d("GPSService","OnDestroy");
         if (locationCallback!=null)
             mFusedLocationClient.removeLocationUpdates(locationCallback);
@@ -241,30 +250,19 @@ public class GetGPSCoordinates extends Service {
         }
     }
 
-    private void initListener(){
-        listener = new LocationListener() {
-            @Override
-            public void onLocationChanged(Location location) {
-                /*Log.d("GPS Service","Fetching Location Through Network ");
-                GetGPSCoordinates.lastKnownLocation = ddToDms(location.getLatitude(), location.getLongitude());
-                Log.d("Network Location ","Latitude = "+location.getLatitude()+" Longitude = "+location.getLongitude());*/
-            }
+    public void setLocationRequest() {
 
-            @Override
-            public void onStatusChanged(String s, int i, Bundle bundle) {
-            }
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(locationreq_normal); //NOTE:changed to 5 mins
+        locationRequest.setFastestInterval(locationreq_fastest); //NOTE:changed to 2 mins
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+    }
 
-            @Override
-            public void onProviderEnabled(String s) {
-            }
+    public static void contdLocationRequest(){
+        locationRequest.setInterval(3*1000);
+    }
 
-            @Override
-            public void onProviderDisabled(String s) {
-                Log.d("GPS Service","Service provider disabled");
-                Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                startActivity(i);
-            }
-        };
+    public static void resetLocationRequest(){
+        locationRequest.setInterval(5*1000);
     }
 }

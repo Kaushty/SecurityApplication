@@ -48,6 +48,9 @@ public class home_fragment extends Fragment {
     int RC;
     Boolean is_paid = true;
     public static Boolean test = true;
+
+    private GetGPSCoordinates getGps = new GetGPSCoordinates(); //To access locationRequest in GetGpsCoordinates
+
     //NOTE: Button bt has been removed. Now using Button emergency. Event listeners also moved to emergency
     @Nullable
     @Override
@@ -64,9 +67,6 @@ public class home_fragment extends Fragment {
         emergency = getActivity().findViewById(R.id.emergency);
         informsafety = getActivity().findViewById(R.id.inform);
         final android.support.v7.widget.Toolbar toolbar1 = (Toolbar) getActivity().findViewById(R.id.toolbar);
-
-
-
 
 
         Log.d("Paid1234hello2","paid: "+UserObject.user.isPaid());
@@ -113,7 +113,7 @@ public class home_fragment extends Fragment {
                 final Animation myAnim = AnimationUtils.loadAnimation(getContext(), R.anim.btn_anim);
                 emergency.startAnimation(myAnim);
                 if (is_paid || true) { //temporarily made ALWAYS TRUE
-
+                    /*
                     //Toasty.info(getContext(), "You are Premium member", Toast.LENGTH_SHORT, true).show(); //Commented-out
 
                     //Code: TO play siren and send emergency message and alert
@@ -130,8 +130,10 @@ public class home_fragment extends Fragment {
                     Intent emergencyintent2 = new Intent(getContext(), SendSMSService.class);
                     emergencyintent2.putExtra("emergency",1);
                     assert c2 != null;
-                    c2.startService(emergencyintent2);
+                    c2.startService(emergencyintent2);*/
 
+                    //Changing GetGPSCoordinates to fetch location more frequently
+                    GetGPSCoordinates.contdLocationRequest();
 
                 } else {
                     //if user using free services only
@@ -162,15 +164,12 @@ public class home_fragment extends Fragment {
                 Animation inf_anim=AnimationUtils.loadAnimation(getContext(),R.anim.btn_anim);
                 informsafety.startAnimation(inf_anim);
                 try {
-
+                    /*
                     if (SendSMSService.getAlert() == 0 && SendSMSService.getEmergency() == 0) {
                         Toasty.warning(getContext(), "Emergency/Alert Not Raised", Toast.LENGTH_SHORT,true).show();  //changed to warning-toasty from toast
                     }
 
-
-
-                else{
-
+                    else{
 
                         Context c3 = getContext();
 
@@ -200,7 +199,10 @@ public class home_fragment extends Fragment {
                                 check = false;
                             }
                         }
-                    }
+                      */
+                        //changing GetGPSCoordinates to fetch location at normal intervals
+                        GetGPSCoordinates.resetLocationRequest();
+                    //}
                 }
                 catch (Exception e)
                 {

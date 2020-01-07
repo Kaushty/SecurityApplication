@@ -7,6 +7,7 @@ import android.app.ActivityManager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentSender;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -45,6 +46,13 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.ResolvableApiException;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.LocationSettingsRequest;
+import com.google.android.gms.location.LocationSettingsResponse;
+import com.google.android.gms.location.LocationSettingsStatusCodes;
+import com.google.android.gms.location.SettingsClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -101,7 +109,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private Intent mSosPlayerIntent;
 
     //Permissions request code
-    int RC;
+    final static int REQUEST_LOCATION = 199;
 
     private static Hashtable<String,String> userData;
     SQLiteDBHelper db;
@@ -261,7 +269,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         FirebaseUser currentUser = firebaseHelper.getFirebaseAuth().getCurrentUser();
         updateUI(currentUser);
     }
-
 
     private boolean checkGPSPermission() {
         Log.d("MainActivity","Inside CheckGPSPermission");
@@ -504,6 +511,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //Write your code if there's no result
             }
         }
+
+        if (requestCode == REQUEST_LOCATION){
+            switch (resultCode) {
+                case Activity.RESULT_OK:
+                    // All required changes were successfully made
+                    Log.d(TAG,"Prompt permission granted");
+                    break;
+                case Activity.RESULT_CANCELED:
+                    // The user was asked to change settings, but chose not to
+                    Log.d(TAG,"Prompt permission denied");
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     public void signIn(final String email, final String password){
@@ -562,7 +584,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             pgbarhide();
         }
         else {
-            Log.d("MainActivty","Inside UpdateUI GPS Permission = "+checkGPSPermission());
+            Log.d("MainActivty","Inside UpdateUI GPS Permission ");
             if (db.getdb_user().getImei() == null){
                 firebaseHelper.firebaseSignOut(mImeiNumber);
                 firebaseHelper.googleSignOut(MainActivity.this);
@@ -579,23 +601,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
             if (checkPlayServices()) {
                 if (checkGPSPermission()) {
+                    /** Turn On GPS Prompt*/
+                    turnOnGps();
                     /**Location Service intent**/
                     Log.d("MainActivity", "GPS Service starting");
-                    Intent mHomeIntent = new Intent(MainActivity.this,navigation.class);
+                    Intent mHomeIntent = new Intent(MainActivity.this, navigation.class);
                     startActivity(mHomeIntent);
                     ContextCompat.startForegroundService(this, new Intent(MainActivity.this, GetGPSCoordinates.class));
                     try {
                         finish();
-                    }catch (Exception e){
-                        Log.d(TAG,"Exception on closing activity:"+e.getMessage());
+                    } catch (Exception e) {
+                        Log.d(TAG, "Exception on closing activity:" + e.getMessage());
                         finish();
                     }
                 }else {
                     Toasty.error(this, "Location Permission is required to keep the app running", Toast.LENGTH_LONG).show();
-                    Log.d(TAG,"Inside else of updateUI denied");
+                    Log.d(TAG,"Inside else of updateUI permission denied");
                 }
             } else {
                 //if google playServices are not installed the GPS Service won't run
+                Toasty.info(MainActivity.this,"Google Play Services are not installed on your phone",Toasty.LENGTH_LONG).show();
                 Intent mHomeIntent = new Intent(MainActivity.this,navigation.class);
                 startActivity(mHomeIntent);
                 try {
@@ -945,4 +970,94 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         return false;
     }
 
+    //To turn on GPS and location services
+    private void turnOnGps() {
+        initLocationRequest();
+        Log.d(TAG,"Inside turnOnGps()");
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest);
+
+        Task<LocationSettingsResponse> task =  LocationServices.getSettingsClient(this).checkLocationSettings(builder.build());
+
+    /*    task.addOnCompleteListener(new OnCompleteListener<LocationSettingsResponse>() {
+            @Override
+            public void onComplete(Task<LocationSettingsResponse> task) {
+                try {
+                    LocationSettingsResponse response = task.getResult(ApiException.class);
+                    // All location settings are satisfied. The client can initialize location
+                    // requests here.
+                    Log.d("turnOnGps()","Location settings satisfied");
+                } catch (ApiException exception) {
+                    switch (exception.getStatusCode()) {
+                        case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
+                            // Location settings are not satisfied. But could be fixed by showing the
+                            // user a dialog.
+                            try {
+                                // Cast to a resolvable exception.
+                                ResolvableApiException resolvable = (ResolvableApiException) exception;
+                                // Show the dialog by calling startResolutionForResult(),
+                                // and check the result in onActivityResult().
+                                resolvable.startResolutionForResult(
+                                        MainActivity.this,
+                                        REQUEST_LOCATION);
+                                Log.d("turnOnGps()","Location settings not satisfied, started ResolutionForResult");
+                            } catch (IntentSender.SendIntentException e) {
+                                Log.d("turnOnGps()","SendIntentException occurred");
+                                // Ignore the error.
+                            } catch (Exception e) {
+                                Log.d("turnOnGps()","An Exception occurred");
+                                // Ignore, should be an impossible error.
+                            }
+                            break;
+                        case LocationSettingsStatusCodes.SETTINGS_CHANGE_UNAVAILABLE:
+                            // Location settings are not satisfied. However, we have no way to fix the
+                            // settings so we won't show the dialog.
+                            Log.d("turnOnGps()","Location settings not satisfied and cannot be fixed");
+                            break;
+                    }
+                }
+            }
+        });*/
+
+        task.addOnSuccessListener(MainActivity.this, new OnSuccessListener<LocationSettingsResponse>() {
+            @Override
+            public void onSuccess(LocationSettingsResponse locationSettingsResponse) {
+                // All location settings are satisfied. The client can initialize
+                // location requests here.
+                Log.d("turnOnGps()","All settings allowed");
+            }
+        });
+
+        task.addOnFailureListener(this, new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                if (e instanceof ResolvableApiException) {
+                    // Location settings are not satisfied, but this can be fixed
+                    // by showing the user a dialog.
+                    try {
+                        Log.d("turnOnGps()","settings are not allowed prompting user");
+                        Toasty.info(MainActivity.this,"Please allow for efficient functioning of the app",Toasty.LENGTH_LONG).show();
+                        // Show the dialog by calling startResolutionForResult(),
+                        // and check the result in onActivityResult().
+                        ResolvableApiException resolvable = (ResolvableApiException) e;
+                        resolvable.startResolutionForResult(MainActivity.this,
+                                REQUEST_LOCATION);
+                    } catch (IntentSender.SendIntentException sendEx) {
+                        // Ignore the error.
+                        Log.d("turnOnGps()","Settings cannot be changed");
+                    }
+                }
+            }
+        });
+    }
+    private LocationRequest locationRequest;
+
+    private void initLocationRequest() {
+
+        locationRequest = LocationRequest.create();
+        locationRequest.setInterval(5*1000); //NOTE:changed to 5 mins
+        locationRequest.setFastestInterval(3*1000); //NOTE:changed to 2 mins
+        locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        Log.d("turnOnGps()","LocationRequest initialised successfully");
+    }
 }
