@@ -54,15 +54,13 @@ public class GetGPSCoordinates extends Service {
     private LocationListener listener;
     private LocationManager locationManager;
     private static String lastKnownLocation=null;
-    private FusedLocationProviderClient mFusedLocationClient;
+    private static FusedLocationProviderClient mFusedLocationClient;
     private static LocationRequest locationRequest;
-    private LocationCallback locationCallback;
+    private static LocationCallback locationCallback;
     public static final String CHANNEL_ID = "ForegroundServiceChannel";
 
-    private long locationreq_sample = 3*1000;
-    private long locationreq_normal = 7*1000;
-    private long locationreq_rapid = 60*1000;
-    private long locationreq_fastest = 3*1000;
+    private static long locationreq_normal = 10*1000;
+    private static long locationreq_fastest = 5*1000;
 
     @Nullable
     @Override
@@ -79,7 +77,7 @@ public class GetGPSCoordinates extends Service {
     public void onCreate() {
 
         Log.d("GPSService", "OnCreate");
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(getApplicationContext());
         setLocationRequest();
 
         /*if ((ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)== PackageManager.PERMISSION_GRANTED)
@@ -151,17 +149,16 @@ public class GetGPSCoordinates extends Service {
                         Log.d("onLocationAvailabilty","Location Available will show updates");
                         //Location Available resume service
                     }else {
-                        Log.d("onLocationAvailabilty","Location Unavailable deploying intent");
-//                        Toasty.warning(getApplicationContext(),"Please turn on location to help us serve you better",Toasty.LENGTH_LONG).show();
-//                        Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
-//                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                        startActivity(i);
+                        Log.d("onLocationAvailabilty","Location Unavailable ");
+                        /*Toasty.warning(getApplicationContext(),"Please turn on location to help us serve you better",Toasty.LENGTH_LONG).show();
+                        Intent i = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(i);*/
                     }
                 }
             };
 
-            mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, getMainLooper());
-
+            requestLocationUpdates();
             Log.d("GPSService", "Notification ON");
             String input = "You are being protected";
             createNotificationChannel();
@@ -184,8 +181,12 @@ public class GetGPSCoordinates extends Service {
             Toast.makeText(this,"Please grant us location permissions",Toast.LENGTH_LONG).show();
         }
 
-
         return START_STICKY;
+    }
+
+    private static void  requestLocationUpdates() {
+        Log.d("GPS Service","Inside RequestLocationRequest");
+        mFusedLocationClient.requestLocationUpdates(locationRequest, locationCallback, null);
     }
 
     /*
@@ -250,19 +251,29 @@ public class GetGPSCoordinates extends Service {
         }
     }
 
-    public void setLocationRequest() {
-
+    public static void setLocationRequest() {
         locationRequest = LocationRequest.create();
         locationRequest.setInterval(locationreq_normal); //NOTE:changed to 5 mins
         locationRequest.setFastestInterval(locationreq_fastest); //NOTE:changed to 2 mins
         locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
     }
 
+    //To increase the frequency of location request.
     public static void contdLocationRequest(){
-        locationRequest.setInterval(3*1000);
+        locationreq_normal= 5*1000;
+        locationreq_fastest = 5*1000;
+        locationRequest.setInterval(locationreq_normal);
+        locationRequest.setFastestInterval(locationreq_fastest);
+        requestLocationUpdates();
+        Log.d("GPS Service","contdLocationRequest called interval = "+locationreq_normal);
     }
 
+    //To set the frequency back to normal.
     public static void resetLocationRequest(){
-        locationRequest.setInterval(5*1000);
+        locationreq_normal= 10*1000;
+        locationRequest.setInterval(locationreq_normal);
+        locationRequest.setFastestInterval(locationreq_fastest);
+        requestLocationUpdates();
+        Log.d("GPS Service","resetLocationRequest called interval = "+locationreq_normal);
     }
 }
